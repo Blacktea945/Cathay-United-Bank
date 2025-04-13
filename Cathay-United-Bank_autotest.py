@@ -1,22 +1,17 @@
 import os
-import unittest
 import time
 import subprocess
 import cv2
 import numpy as np
-import base64
-import imutils
 from appium import webdriver
 from appium.options.android import UiAutomator2Options
 from appium.webdriver.common.appiumby import AppiumBy
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
 from selenium.webdriver.common.actions.action_builder import ActionBuilder
 from selenium.webdriver.common.actions.interaction import POINTER_TOUCH
 from selenium.webdriver.common.actions.pointer_input import PointerInput
 from selenium.webdriver.common.action_chains import ActionChains
-from PIL import Image as PILImage
 
 
 capabilities = dict(
@@ -27,7 +22,7 @@ capabilities = dict(
     # appActivity='com.google.android.apps.chrome.Main',
     noReset="true",
     # dontStopAppOnReset="true",
-    chromedriverExecutable="C:/Users/Bleaktea945/node_modules/appium-chromium-driver/node_modules/appium-chromedriver/chromedriver/win/chromedriver.exe",
+    # chromedriverExecutable="C:/Users/Bleaktea945/node_modules/appium-chromium-driver/node_modules/appium-chromedriver/chromedriver/win/chromedriver.exe",
 )
 
 appium_server_url = 'http://localhost:4723'
@@ -36,30 +31,23 @@ driver = webdriver.Remote(appium_server_url, options=UiAutomator2Options().load_
 deviceName = subprocess.check_output("adb devices").decode("utf-8")
 print("-", deviceName)
 
-def click_ui(ui):
+def click_element(locat):
     try:
-        element = WebDriverWait(driver, 5).until(EC.presence_of_element_located((AppiumBy.ANDROID_UIAUTOMATOR, ui)))
-        element.click()
-    except Exception as e:
-        print(e)
-
-def click_xpath(xpath):
-    try:
-        element = WebDriverWait(driver, 5).until(EC.presence_of_element_located((AppiumBy.XPATH, xpath)))
-        element.click()
+        element = WebDriverWait(driver, 5).until(EC.presence_of_element_located((AppiumBy.ANDROID_UIAUTOMATOR, locat))).click()
+    except Exception:
+        element = WebDriverWait(driver, 5).until(EC.presence_of_element_located((AppiumBy.XPATH, locat))).click()
     except Exception as e:
         print(e)
 
 def send_keys(xpath, keys):
     try:
-        element = WebDriverWait(driver, 5).until(EC.presence_of_element_located((AppiumBy.XPATH, xpath)))
-        element.send_keys(keys)
+        element = WebDriverWait(driver, 5).until(EC.presence_of_element_located((AppiumBy.XPATH, xpath))).send_keys(keys)
     except Exception as e:
         print(e)
 
-chrome = click_ui('new UiSelector().text("Chrome")')
+chrome = click_element('new UiSelector().text("Chrome")')
 
-search = click_xpath('//android.widget.EditText[@resource-id="com.android.chrome:id/search_box_text"]')
+search = click_element('//android.widget.EditText[@resource-id="com.android.chrome:id/search_box_text"]')
 
 url = send_keys('//android.widget.EditText[@resource-id="com.android.chrome:id/url_bar"]', "https://www.cathaybk.com.tw/cathaybk/")
 
@@ -69,11 +57,11 @@ time.sleep(2)
 driver.save_screenshot("Cathay-United-Bank.png")  
 time.sleep(2)
 
-menu = click_ui('new UiSelector().description(\"  \").instance(0)')
+menu = click_element('new UiSelector().description(\"  \").instance(0)')
 
-product = click_ui('new UiSelector().text("產品介紹")')
+product = click_element('new UiSelector().text("產品介紹")')
 
-card = click_ui('new UiSelector().text("信用卡")')
+card = click_element('new UiSelector().text("信用卡")')
 time.sleep(2)
 
 driver.save_screenshot("Cathay-United-Bank_2.png")
@@ -101,7 +89,7 @@ try:
 except Exception as e:
     print("找不到項目:", e)
 
-cardIntro = click_ui('new UiSelector().description("search").instance(1)')
+cardIntro = click_element('new UiSelector().description("search").instance(1)')
 time.sleep(2)
 
 # 滑動
@@ -109,7 +97,7 @@ actions = ActionChains(driver)
 actions.w3c_actions.pointer_action.move_to_location(750, 940).pointer_down().move_to_location(100, 940).release()
 actions.perform()
 
-cardIntro = click_ui('new UiSelector().description("停發卡")')
+cardIntro = click_element('new UiSelector().description("停發卡")')
 
 time.sleep(2)
 
